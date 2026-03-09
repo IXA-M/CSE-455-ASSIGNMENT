@@ -43,7 +43,11 @@ def post_json(url: str, payload: dict) -> None:
     request = urllib.request.Request(
         url,
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "X-Request-Id": str(uuid.uuid4())},
+        headers={
+            "Content-Type": "application/json",
+            "Connection": "close",
+            "X-Request-Id": str(uuid.uuid4()),
+        },
         method="POST",
     )
     try:
@@ -84,6 +88,7 @@ def send_request(base_url: str, endpoint: str) -> dict:
     request_id = str(uuid.uuid4())
     headers = {
         "Accept": "application/json",
+        "Connection": "close",
         "User-Agent": "aiops-traffic-generator/1.0",
         "X-Request-Id": request_id,
     }
@@ -129,8 +134,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Controlled traffic generator for Laravel AIOps telemetry.")
     parser.add_argument("--base-url", default="http://127.0.0.1:8000", help="Laravel base URL.")
     parser.add_argument("--duration-minutes", type=int, default=10, help="Total run time in minutes.")
-    parser.add_argument("--target-rps", type=float, default=6.0, help="Average request rate.")
-    parser.add_argument("--workers", type=int, default=40, help="Thread pool size.")
+    parser.add_argument("--target-rps", type=float, default=3.0, help="Average request rate.")
+    parser.add_argument("--workers", type=int, default=12, help="Thread pool size.")
+    parser.add_argument("--max-inflight", type=int, default=8, help="Maximum concurrent in-flight requests.")
     args = parser.parse_args()
     assert_server_ready(args.base_url)
 
@@ -166,12 +172,14 @@ def main() -> None:
     marker_started = False
     marker_ended = False
     lock = threading.Lock()
+    inflight = threading.Semaphore(args.max_inflight)
 
     def _consume(future: concurrent.futures.Future) -> None:
         nonlocal completed
         try:
             future.result()
         finally:
+            inflight.release()
             with lock:
                 completed += 1
 
@@ -210,6 +218,7 @@ def main() -> None:
                 marker_ended = True
 
             endpoint = choose_endpoint(in_anomaly)
+            inflight.acquire()
             future = executor.submit(send_request, args.base_url, endpoint)
             future.add_done_callback(_consume)
             futures.append(future)

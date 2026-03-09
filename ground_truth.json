@@ -1,6 +1,6 @@
 {
-  "anomaly_start_iso": "2026-03-09T16:54:22.007263+00:00",
-  "anomaly_end_iso": "2026-03-09T16:56:22.007263+00:00",
+  "anomaly_start_iso": "2026-03-09T17:14:08.968439+00:00",
+  "anomaly_end_iso": "2026-03-09T17:16:08.968439+00:00",
   "anomaly_type": "LATENCY_SPIKE",
   "expected_behavior": "P95/P99 latency and TIMEOUT_ERROR counts increase because /api/slow?hard=1 rises to 30% for exactly two minutes."
 }

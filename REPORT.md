@@ -1,33 +1,44 @@
 # Engineering Report
 
-## Overview
+## Executive Summary
 
-This project turns a Laravel API into an ML-ready telemetry source rather than a plain application log. Every API request emits a stable JSON record with request identity, latency, error class, client context, request and response sizes, host metadata, and build version. The telemetry is designed so it can feed anomaly detection, incident triage, and metric-based alerting without post-hoc schema cleanup.
+This project instruments a Laravel API as an AIOps-style telemetry source rather than a simple application logger. The design goal was to emit machine-usable signals for anomaly detection and incident triage: stable structured logs, correlation IDs, centralized error categories, RED metrics for Prometheus, and a Grafana dashboard that makes a controlled anomaly window visibly obvious.
 
-The API includes deterministic and stochastic failure modes. `/api/error` creates a system failure, `/api/db?fail=1` creates a real `QueryException`, `/api/validate` raises `ValidationException` on bad payloads, and `/api/slow?hard=1` creates a latency-only anomaly that still returns HTTP 200. That last case matters because not all incidents present as status-code failures. The middleware and handler together tag those requests as `TIMEOUT_ERROR` when the latency exceeds 4000 ms.
+The experiment intentionally includes both hard failures and silent degradation. `/api/error` simulates system faults, `/api/db?fail=1` triggers a real query exception, `/api/validate` produces validation failures, and `/api/slow?hard=1` creates the most interesting case: requests that still return HTTP 200 but are operationally unhealthy because they exceed the latency threshold. That distinction matters in production systems because not all incidents show up as 5xx spikes.
+
+## Incident and Experiment Design
+
+The API surface was built to create a mixed telemetry distribution rather than a synthetic single-pattern dataset. Normal traffic comes from `/api/normal`, variable but healthy latency comes from `/api/random`, deterministic slow calls come from `/api/slow`, and controlled fault modes come from `/api/error`, `/api/db`, and `/api/validate`.
+
+The traffic generator creates a base workload and then injects a clearly bounded anomaly window. The selected anomaly type is a latency spike: during the anomaly window, the proportion of `/api/slow?hard=1` traffic rises sharply. This is a useful experiment design because it shifts percentiles, increases timeout-category records, and keeps status codes partially healthy, which mirrors real-world degradations where customers feel the outage before the error budget fully reflects it.
+
+Ground truth is exported to `ground_truth.json` with explicit start and end timestamps, anomaly type, and expected behavior. That makes the dataset usable for dashboard validation, post-run analysis, and future anomaly model benchmarking.
 
 ## Log Schema Design
 
-Each telemetry record uses one stable schema and always includes the same keys:
+Every log line follows one stable flat JSON schema. Keys are never conditionally removed; when data is unavailable, the field remains present with a null value. This prevents downstream schema drift and makes the dataset easier to use in pandas, Spark, SIEM tooling, or model feature pipelines.
 
-- `timestamp`: event time in ISO-8601 for correlation with Prometheus and Grafana.
-- `request_id`: propagated from `X-Request-Id` or generated server-side for distributed tracing.
-- `method`, `path`, `query`, `route_name`, `status_code`: request identity and routing context.
-- `latency_ms`: core feature for anomaly detection, SLO tracking, and timeout classification.
-- `error_category`: normalized label for supervised or weakly supervised incident analysis.
-- `severity`: simplified signal for filtering logs into success vs failure streams.
-- `client_ip`, `user_agent`: client fingerprinting and clustering of suspicious traffic.
-- `payload_size_bytes`, `response_size_bytes`: size shifts are useful for abuse detection and regression analysis.
-- `build_version`: lets operators correlate regressions with a deployment.
-- `host`: required when the application is later scaled horizontally.
-- `exception_class`: preserves coarse exception identity without leaking stack traces into the dataset.
-- `message`: human-readable summary for triage dashboards.
+Field rationale:
 
-The schema is intentionally flat and stable. Missing values are emitted as `null` rather than omitted keys, which avoids downstream feature engineering drift.
+- `timestamp`: aligns logs with Prometheus time series and the anomaly window.
+- `request_id`: correlation key propagated from `X-Request-Id` or generated server-side.
+- `method`, `path`, `query`, `route_name`: request identity for aggregation and debugging.
+- `status_code`: keeps transport success and failure visible.
+- `latency_ms`: the most important operational feature for anomaly detection.
+- `error_category`: normalized label for weak supervision and grouped triage.
+- `severity`: lightweight separation of nominal versus problematic events.
+- `client_ip`, `user_agent`: useful for clustering and isolating traffic patterns.
+- `payload_size_bytes`, `response_size_bytes`: captures request and response size drift.
+- `build_version`: supports release correlation when behavior changes after deployment.
+- `host`: future-proofs the schema for multi-instance deployments.
+- `exception_class`: preserves coarse exception identity without full stack traces.
+- `message`: human-readable summary for analysts and screenshots.
 
-## Error Categorization
+The central operational property of the schema is that it captures both transport-level outcomes and application-level health. This is what allows a request to be logged as `status_code=200` while still being labeled `TIMEOUT_ERROR`.
 
-Central categorization lives in `app/Exceptions/Handler.php` and uses five classes:
+## Error Categorization and Timeout Logic
+
+Centralized classification lives in the exception handling layer and uses five categories:
 
 - `VALIDATION_ERROR`
 - `DATABASE_ERROR`
@@ -35,11 +46,13 @@ Central categorization lives in `app/Exceptions/Handler.php` and uses five class
 - `SYSTEM_ERROR`
 - `UNKNOWN`
 
-Validation and database failures are mapped from first-class Laravel exception types. HTTP aborts and other framework-level failures map to `SYSTEM_ERROR`. The timeout path is special because the endpoint can return HTTP 200. The middleware measures latency for every request, calls the centralized categorizer, and records `TIMEOUT_ERROR` when `/api/slow?hard=1` breaches the 4000 ms threshold. This yields log evidence where `status_code=200` but `error_category="TIMEOUT_ERROR"`, which is exactly the kind of hidden degradation an anomaly model should learn to detect.
+Validation and database categories map directly from Laravel exception types. `SYSTEM_ERROR` covers framework-level or explicit fault paths such as `/api/error`. `TIMEOUT_ERROR` is intentionally orthogonal to HTTP status. The middleware measures latency for all requests and applies the timeout classification when `/api/slow?hard=1` exceeds 4000 ms, even if the response remains 200.
+
+This is the strongest evidence that the telemetry is incident-oriented instead of response-code-oriented. It captures brownout behavior, not only crashes.
 
 ## Metrics Design
 
-Prometheus exposure follows RED-style metrics:
+Prometheus exposure follows RED metrics:
 
 - `http_requests_total{method,path,status}`
 - `http_errors_total{method,path,error_category}`
@@ -48,27 +61,55 @@ Prometheus exposure follows RED-style metrics:
 - `http_request_duration_seconds_count{method,path}`
 - `anomaly_window_active{type}`
 
-Labels are constrained to method, normalized path, status, and error category. High-cardinality values such as `request_id`, raw query strings, payload fields, or client identifiers are deliberately excluded. Histogram buckets are tuned to the workload profile: `0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, +Inf`. These buckets clearly separate fast requests, normal slow requests, and pathological hard-slow requests.
+The label design intentionally avoids explosion. There is no `request_id`, no raw query string, no client IP, and no payload-derived label. Labels are limited to dimensions that are operationally meaningful and aggregation-safe.
 
-The extra `anomaly_window_active` gauge is a ground-truth marker. It allows the dashboard to show the exact anomaly window without relying on manual notes, which is important when comparing observed behavior against the injected experiment design.
+The histogram buckets are tuned to the workload profile rather than copied from a default template:
 
-## Controlled Anomaly Design
+- `0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, +Inf`
 
-The Python traffic generator produces a mixed workload for 8 to 12 minutes with at least 3000 requests. Baseline traffic follows the specified distribution, while the anomaly window lasts exactly two minutes and switches to a latency-spike profile where `/api/slow?hard=1` rises to 30 percent of traffic. That change is large enough to produce a visible shift in:
+These boundaries separate the workload into intuitive bands:
 
-- P95 and P99 latency
-- `TIMEOUT_ERROR` counts
-- request completion times in logs
-- the anomaly marker panel
+- sub-100 ms healthy responses
+- sub-second normal API behavior
+- 1 to 2.5 second moderate slowness
+- 5 second deterministic slow calls
+- 5 to 10 second hard-slow anomaly calls
 
-Because the anomaly window is timestamped and exported to `ground_truth.json`, the dataset can be used for supervised evaluation, dashboard validation, or feature engineering experiments.
+Because the buckets match the actual endpoint behavior, P50, P95, and P99 remain useful in Grafana rather than collapsing into a single saturated bucket.
 
-## Evidence To Capture After Running
+## Grafana Evidence and Screenshot Areas
 
-After running the traffic generator and exporting logs, the required proof points are:
+Insert screenshots into the final PDF in the following locations.
 
-- `storage/logs/aiops.log` contains at least 1500 structured records.
-- `logs.json` contains the same records as a JSON array.
-- at least 100 records have `severity="error"`.
-- some `/api/slow?hard=1` records show `status_code=200` with `error_category="TIMEOUT_ERROR"`.
-- Grafana shows a clear two-minute spike in high-percentile latency and the anomaly marker aligns with it.
+### Screenshot A: Request Rate and Error Rate
+
+Place a Grafana screenshot showing:
+
+- Request Rate Per Endpoint
+- Error Rate Per Endpoint
+
+[Insert Screenshot A Here]
+
+### Screenshot B: Latency Spike
+
+Place a Grafana screenshot showing:
+
+- P50 / P95 / P99 Latency Per Endpoint
+- visible spike during the anomaly window
+
+[Insert Screenshot B Here]
+
+### Screenshot C: Category Breakdown and Marker
+
+Place a Grafana screenshot showing:
+
+- Error Category Breakdown
+- Anomaly Window Marker
+
+[Insert Screenshot C Here]
+
+These screenshots should prove two things: first, the anomaly is visible in the metrics; second, the category breakdown distinguishes validation, system, and timeout behavior instead of collapsing all failures together.
+
+## Conclusion
+
+From an engineering perspective, the system now produces telemetry that is realistic enough for anomaly analysis. Logs are structured and stable, metrics are bounded and aggregatable, and the anomaly window is both controlled and externally documented. The most important design decision was treating latency-only degradation as a first-class error condition. That makes the dataset much more useful for incident-oriented analysis than a simple success/failure log stream.
