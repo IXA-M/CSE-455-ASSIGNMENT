@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: laravel_aiops
+    metrics_path: /metrics
+    scrape_timeout: 25s
+    static_configs:
+      - targets:
+          - host.docker.internal:8000
