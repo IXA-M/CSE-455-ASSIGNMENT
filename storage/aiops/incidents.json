@@ -1,0 +1,770 @@
+[
+    {
+        "incident_id": "66f3bf78-df40-4e6c-af4e-b6b56c1c91f5",
+        "incident_type": "ERROR_STORM",
+        "severity": "critical",
+        "status": "resolved",
+        "detected_at": "2026-03-21T15:58:29+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/validate",
+            "/api/slow",
+            "/api/normal"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "traffic",
+                "endpoint": "/api/normal",
+                "observed": 0.47482042564538435,
+                "baseline": 0.16496408512907687,
+                "threshold": 0.32992817025815374
+            },
+            {
+                "signal": "error_rate",
+                "endpoint": "/api/slow",
+                "observed": 0.11589489770222274,
+                "baseline": 0.023178979540444546,
+                "threshold": 0.1
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/slow",
+                "observed": 0.1773440494641935,
+                "baseline": 0.06130214322617202,
+                "threshold": 0.12260428645234404
+            },
+            {
+                "signal": "latency",
+                "endpoint": "/api/validate",
+                "observed": 6.999999999999999,
+                "baseline": 1.4,
+                "threshold": 4.199999999999999
+            },
+            {
+                "signal": "error_rate",
+                "endpoint": "/api/validate",
+                "observed": 1,
+                "baseline": 0.2,
+                "threshold": 0.6000000000000001
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/validate",
+                "observed": 0.016665833374997916,
+                "baseline": 0.0033331666749995834,
+                "threshold": 0.006666333349999167
+            }
+        ],
+        "baseline_values": {
+            "/api/validate": {
+                "avg_latency_ms": 1.4,
+                "request_rate": 0.0033331666749995834,
+                "error_rate": 0.2
+            },
+            "/api/slow": {
+                "avg_latency_ms": 2037.874751382308,
+                "request_rate": 0.06130214322617202,
+                "error_rate": 0.023178979540444546
+            },
+            "/api/normal": {
+                "avg_latency_ms": 0.8447306380593386,
+                "request_rate": 0.16496408512907687,
+                "error_rate": 0
+            }
+        },
+        "observed_values": {
+            "/api/validate": {
+                "avg_latency_ms": 6.999999999999999,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.016665833374997916,
+                "error_rate": 1,
+                "error_categories": {
+                    "VALIDATION_ERROR": 0.016665833374997916
+                }
+            },
+            "/api/slow": {
+                "avg_latency_ms": 5081.438273040572,
+                "p95_latency_ms": 9750,
+                "p99_latency_ms": 9950,
+                "request_rate": 0.1773440494641935,
+                "error_rate": 0.11589489770222274,
+                "error_categories": {
+                    "TIMEOUT_ERROR": 0.020557786962656803
+                }
+            },
+            "/api/normal": {
+                "avg_latency_ms": 2.1760341426776453,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.47482042564538435,
+                "error_rate": 0,
+                "error_categories": []
+            }
+        },
+        "summary": "ERROR STORM detected affecting /api/validate, /api/slow, /api/normal. Signals: traffic@/api/normal, error_rate@/api/slow, traffic@/api/slow, latency@/api/validate, error_rate@/api/validate, traffic@/api/validate"
+    },
+    {
+        "incident_id": "932eebe9-dd1f-44ca-8b40-0e70a380133f",
+        "incident_type": "TRAFFIC_SURGE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T15:58:57+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/error",
+            "/api/normal",
+            "/api/slow",
+            "/api/validate"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "traffic",
+                "endpoint": "/api/normal",
+                "observed": 0.4444296301234404,
+                "baseline": 0.21154167596147078,
+                "threshold": 0.42308335192294155
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/slow",
+                "observed": 0.18888259280246217,
+                "baseline": 0.08256555148888704,
+                "threshold": 0.16513110297777409
+            },
+            {
+                "signal": "latency",
+                "endpoint": "/api/error",
+                "observed": 2.999999999999999,
+                "baseline": 0.49999999999999983,
+                "threshold": 1.4999999999999996
+            },
+            {
+                "signal": "error_rate",
+                "endpoint": "/api/error",
+                "observed": 1,
+                "baseline": 0.16666666666666666,
+                "threshold": 0.5
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.02222148150617202,
+                "baseline": 0.00370358025102867,
+                "threshold": 0.00740716050205734
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/validate",
+                "observed": 0.02222148150617202,
+                "baseline": 0.0064812191468616555,
+                "threshold": 0.012962438293723311
+            }
+        ],
+        "baseline_values": {
+            "/api/error": {
+                "avg_latency_ms": 0.49999999999999983,
+                "request_rate": 0.00370358025102867,
+                "error_rate": 0.16666666666666666
+            },
+            "/api/normal": {
+                "avg_latency_ms": 0.9997755317161156,
+                "request_rate": 0.21154167596147078,
+                "error_rate": 0
+            },
+            "/api/slow": {
+                "avg_latency_ms": 2543.2877830146685,
+                "request_rate": 0.08256555148888704,
+                "error_rate": 0.034021943730599274
+            },
+            "/api/validate": {
+                "avg_latency_ms": 2.2500000000000004,
+                "request_rate": 0.0064812191468616555,
+                "error_rate": 0.3333333333333333
+            }
+        },
+        "observed_values": {
+            "/api/error": {
+                "avg_latency_ms": 2.999999999999999,
+                "p95_latency_ms": 47.49999999999999,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.02222148150617202,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.02222148150617202
+                }
+            },
+            "/api/normal": {
+                "avg_latency_ms": 1.775,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.4444296301234404,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/slow": {
+                "avg_latency_ms": 5070.352941176471,
+                "p95_latency_ms": 9750,
+                "p99_latency_ms": 9950,
+                "request_rate": 0.18888259280246217,
+                "error_rate": 0.08823676468137294,
+                "error_categories": {
+                    "TIMEOUT_ERROR": 0.01666638889351844
+                }
+            },
+            "/api/validate": {
+                "avg_latency_ms": 6.500000000000002,
+                "p95_latency_ms": 47.49999999999999,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.02222148150617202,
+                "error_rate": 1,
+                "error_categories": {
+                    "VALIDATION_ERROR": 0.02222148150617202
+                }
+            }
+        },
+        "summary": "TRAFFIC SURGE detected affecting /api/error, /api/normal, /api/slow, /api/validate. Signals: traffic@/api/normal, traffic@/api/slow, latency@/api/error, error_rate@/api/error, traffic@/api/error, traffic@/api/validate"
+    },
+    {
+        "incident_id": "72d46626-591b-475a-92eb-09b256002d8f",
+        "incident_type": "SERVICE_DEGRADATION",
+        "severity": "high",
+        "status": "resolved",
+        "detected_at": "2026-03-21T15:59:24+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/db",
+            "/api/error",
+            "/api/normal",
+            "/api/validate"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "traffic",
+                "endpoint": "/api/normal",
+                "observed": 0.5666603704403285,
+                "baseline": 0.262272918029879,
+                "threshold": 0.524545836059758
+            },
+            {
+                "signal": "latency",
+                "endpoint": "/api/db",
+                "observed": 3.5000000000000004,
+                "baseline": 0.5000000000000001,
+                "threshold": 1.5000000000000004
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/db",
+                "observed": 0.02222197531138543,
+                "baseline": 0.0031745679016264897,
+                "threshold": 0.006349135803252979
+            },
+            {
+                "signal": "latency",
+                "endpoint": "/api/error",
+                "observed": 3,
+                "baseline": 0.857142857142857,
+                "threshold": 2.571428571428571
+            },
+            {
+                "signal": "error_rate",
+                "endpoint": "/api/error",
+                "observed": 1,
+                "baseline": 0.2857142857142857,
+                "threshold": 0.8571428571428571
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.04444395062277086,
+                "baseline": 0.009523633161277554,
+                "threshold": 0.019047266322555108
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/validate",
+                "observed": 0.02222197531138543,
+                "baseline": 0.00872989859893648,
+                "threshold": 0.01745979719787296
+            }
+        ],
+        "baseline_values": {
+            "/api/db": {
+                "avg_latency_ms": 0.5000000000000001,
+                "request_rate": 0.0031745679016264897,
+                "error_rate": 0
+            },
+            "/api/error": {
+                "avg_latency_ms": 0.857142857142857,
+                "request_rate": 0.009523633161277554,
+                "error_rate": 0.2857142857142857
+            },
+            "/api/normal": {
+                "avg_latency_ms": 1.0866423325073706,
+                "request_rate": 0.262272918029879,
+                "error_rate": 0
+            },
+            "/api/validate": {
+                "avg_latency_ms": 2.8571428571428577,
+                "request_rate": 0.00872989859893648,
+                "error_rate": 0.42857142857142855
+            }
+        },
+        "observed_values": {
+            "/api/db": {
+                "avg_latency_ms": 3.5000000000000004,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.02222197531138543,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/error": {
+                "avg_latency_ms": 3,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.04444395062277086,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.04444395062277085
+                }
+            },
+            "/api/normal": {
+                "avg_latency_ms": 1.6078431372549018,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.5666603704403285,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/validate": {
+                "avg_latency_ms": 6.5,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.02222197531138543,
+                "error_rate": 1,
+                "error_categories": {
+                    "VALIDATION_ERROR": 0.022221975311385426
+                }
+            }
+        },
+        "summary": "SERVICE DEGRADATION detected affecting /api/db, /api/error, /api/normal, /api/validate. Signals: traffic@/api/normal, latency@/api/db, traffic@/api/db, latency@/api/error, error_rate@/api/error, traffic@/api/error, traffic@/api/validate"
+    },
+    {
+        "incident_id": "e37b9205-03eb-4c3f-ac96-77401395d100",
+        "incident_type": "TRAFFIC_SURGE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T15:59:53+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/db",
+            "/api/error"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "latency",
+                "endpoint": "/api/db",
+                "observed": 2.750000000000001,
+                "baseline": 0.7812500000000002,
+                "threshold": 2.343750000000001
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/db",
+                "observed": 0.04444493827709197,
+                "baseline": 0.008333364198559675,
+                "threshold": 0.01666672839711935
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.06666740741563795,
+                "baseline": 0.016666604943072604,
+                "threshold": 0.03333320988614521
+            }
+        ],
+        "baseline_values": {
+            "/api/db": {
+                "avg_latency_ms": 0.7812500000000002,
+                "request_rate": 0.008333364198559675,
+                "error_rate": 0
+            },
+            "/api/error": {
+                "avg_latency_ms": 1.125,
+                "request_rate": 0.016666604943072604,
+                "error_rate": 0.375
+            }
+        },
+        "observed_values": {
+            "/api/db": {
+                "avg_latency_ms": 2.750000000000001,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.04444493827709197,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/error": {
+                "avg_latency_ms": 3,
+                "p95_latency_ms": 47.49999999999999,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.06666740741563795,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.06666740741563795
+                }
+            }
+        },
+        "summary": "TRAFFIC SURGE detected affecting /api/db, /api/error. Signals: latency@/api/db, traffic@/api/db, traffic@/api/error"
+    },
+    {
+        "incident_id": "8b4efa4e-d8ce-4f3a-b8c1-aa7ec13f0f1d",
+        "incident_type": "TRAFFIC_SURGE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:00:14+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/db",
+            "/api/error"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "traffic",
+                "endpoint": "/api/db",
+                "observed": 0.04444493827709197,
+                "baseline": 0.012345761318396598,
+                "threshold": 0.024691522636793195
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.04444493827709197,
+                "baseline": 0.019753086424630313,
+                "threshold": 0.039506172849260626
+            }
+        ],
+        "baseline_values": {
+            "/api/db": {
+                "avg_latency_ms": 1.0000000000000002,
+                "request_rate": 0.012345761318396598,
+                "error_rate": 0
+            },
+            "/api/error": {
+                "avg_latency_ms": 1.3333333333333333,
+                "request_rate": 0.019753086424630313,
+                "error_rate": 0.4444444444444444
+            }
+        },
+        "observed_values": {
+            "/api/db": {
+                "avg_latency_ms": 2.7500000000000004,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.04444493827709197,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/error": {
+                "avg_latency_ms": 3,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.04444493827709197,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.04444493827709197
+                }
+            }
+        },
+        "summary": "TRAFFIC SURGE detected affecting /api/db, /api/error. Signals: traffic@/api/db, traffic@/api/error"
+    },
+    {
+        "incident_id": "cecd3698-382a-4925-8f6c-dde44c260f3c",
+        "incident_type": "SERVICE_DEGRADATION",
+        "severity": "high",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:00:39+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/slow",
+            "/api/db"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "error_rate",
+                "endpoint": "/api/slow",
+                "observed": 0.3333333333333333,
+                "baseline": 0.10442927268093657,
+                "threshold": 0.3132878180428097
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/db",
+                "observed": 0.033333333333333326,
+                "baseline": 0.01444451851989027,
+                "threshold": 0.02888903703978054
+            }
+        ],
+        "baseline_values": {
+            "/api/slow": {
+                "avg_latency_ms": 3631.965964626729,
+                "request_rate": 0.11842845435656957,
+                "error_rate": 0.10442927268093657
+            },
+            "/api/db": {
+                "avg_latency_ms": 1.1,
+                "request_rate": 0.01444451851989027,
+                "error_rate": 0
+            }
+        },
+        "observed_values": {
+            "/api/slow": {
+                "avg_latency_ms": 5277.666666666666,
+                "p95_latency_ms": 9750,
+                "p99_latency_ms": 9950,
+                "request_rate": 0.16666666666666666,
+                "error_rate": 0.3333333333333333,
+                "error_categories": {
+                    "TIMEOUT_ERROR": 0.05555555555555555
+                }
+            },
+            "/api/db": {
+                "avg_latency_ms": 1.9999999999999996,
+                "p95_latency_ms": 47.49999999999999,
+                "p99_latency_ms": 49.50000000000001,
+                "request_rate": 0.033333333333333326,
+                "error_rate": 0,
+                "error_categories": []
+            }
+        },
+        "summary": "SERVICE DEGRADATION detected affecting /api/slow, /api/db. Signals: error_rate@/api/slow, traffic@/api/db"
+    },
+    {
+        "incident_id": "6dfe450f-6e84-4d99-9368-3356b4926235",
+        "incident_type": "SERVICE_DEGRADATION",
+        "severity": "high",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:01:44+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/db",
+            "/api/validate"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "latency",
+                "endpoint": "/api/db",
+                "observed": 4.500000000000001,
+                "baseline": 1.4999999999999998,
+                "threshold": 4.499999999999999
+            },
+            {
+                "signal": "latency",
+                "endpoint": "/api/validate",
+                "observed": 12.999999999999998,
+                "baseline": 3.0000000000000004,
+                "threshold": 9.000000000000002
+            }
+        ],
+        "baseline_values": {
+            "/api/db": {
+                "avg_latency_ms": 1.4999999999999998,
+                "request_rate": 0.014964577574704263,
+                "error_rate": 0
+            },
+            "/api/validate": {
+                "avg_latency_ms": 3.0000000000000004,
+                "request_rate": 0.005555424981679103,
+                "error_rate": 0.3076923076923077
+            }
+        },
+        "observed_values": {
+            "/api/db": {
+                "avg_latency_ms": 4.500000000000001,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.022221975311385426,
+                "error_rate": 0,
+                "error_categories": []
+            },
+            "/api/validate": {
+                "avg_latency_ms": 12.999999999999998,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0,
+                "error_rate": 0,
+                "error_categories": {
+                    "VALIDATION_ERROR": 0
+                }
+            }
+        },
+        "summary": "SERVICE DEGRADATION detected affecting /api/db, /api/validate. Signals: latency@/api/db, latency@/api/validate"
+    },
+    {
+        "incident_id": "0a095ad8-5866-498a-a3db-500277fa945c",
+        "incident_type": "LATENCY_SPIKE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:02:29+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/db"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "latency",
+                "endpoint": "/api/db",
+                "observed": 7.000000000000003,
+                "baseline": 2.2333333333333334,
+                "threshold": 6.7
+            }
+        ],
+        "baseline_values": {
+            "/api/db": {
+                "avg_latency_ms": 2.2333333333333334,
+                "request_rate": 0.015191522786965917,
+                "error_rate": 0
+            }
+        },
+        "observed_values": {
+            "/api/db": {
+                "avg_latency_ms": 7.000000000000003,
+                "p95_latency_ms": 47.49999999999999,
+                "p99_latency_ms": 49.50000000000001,
+                "request_rate": 0.016666666666666666,
+                "error_rate": 0,
+                "error_categories": []
+            }
+        },
+        "summary": "LATENCY SPIKE detected affecting /api/db. Signals: latency@/api/db"
+    },
+    {
+        "incident_id": "875993b4-f4a7-4dd4-ac3b-10b59ff56cd9",
+        "incident_type": "LATENCY_SPIKE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:04:29+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/error"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "latency",
+                "endpoint": "/api/error",
+                "observed": 3.4999999999999996,
+                "baseline": 1.1249999999999996,
+                "threshold": 3.3749999999999987
+            },
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.04150110007333822,
+                "baseline": 0.019306715728080077,
+                "threshold": 0.038613431456160155
+            }
+        ],
+        "baseline_values": {
+            "/api/error": {
+                "avg_latency_ms": 1.1249999999999996,
+                "request_rate": 0.019306715728080077,
+                "error_rate": 0.55
+            }
+        },
+        "observed_values": {
+            "/api/error": {
+                "avg_latency_ms": 3.4999999999999996,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.04150110007333822,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.04151332311042958
+                }
+            }
+        },
+        "summary": "LATENCY SPIKE detected affecting /api/error. Signals: latency@/api/error, traffic@/api/error"
+    },
+    {
+        "incident_id": "456099df-ebf6-4377-b853-8257e0b79c2c",
+        "incident_type": "TRAFFIC_SURGE",
+        "severity": "medium",
+        "status": "resolved",
+        "detected_at": "2026-03-21T16:04:50+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/error"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "traffic",
+                "endpoint": "/api/error",
+                "observed": 0.053191111111111106,
+                "baseline": 0.02092025836536727,
+                "threshold": 0.04184051673073454
+            }
+        ],
+        "baseline_values": {
+            "/api/error": {
+                "avg_latency_ms": 1.2380952380952377,
+                "request_rate": 0.02092025836536727,
+                "error_rate": 0.5714285714285714
+            }
+        },
+        "observed_values": {
+            "/api/error": {
+                "avg_latency_ms": 3.4999999999999996,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.053191111111111106,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.05320388888888889
+                }
+            }
+        },
+        "summary": "TRAFFIC SURGE detected affecting /api/error. Signals: traffic@/api/error"
+    },
+    {
+        "incident_id": "b201b6e4-c52d-47d8-b97e-34a064923391",
+        "incident_type": "LATENCY_SPIKE",
+        "severity": "medium",
+        "status": "open",
+        "detected_at": "2026-03-21T16:06:04+00:00",
+        "affected_service": "Laravel",
+        "affected_endpoints": [
+            "/api/error"
+        ],
+        "triggering_signals": [
+            {
+                "signal": "latency",
+                "endpoint": "/api/error",
+                "observed": 5.000000000000004,
+                "baseline": 1.6041666666666667,
+                "threshold": 4.8125
+            }
+        ],
+        "baseline_values": {
+            "/api/error": {
+                "avg_latency_ms": 1.6041666666666667,
+                "request_rate": 0.022131238055589714,
+                "error_rate": 0.625
+            }
+        },
+        "observed_values": {
+            "/api/error": {
+                "avg_latency_ms": 5.000000000000004,
+                "p95_latency_ms": 47.5,
+                "p99_latency_ms": 49.5,
+                "request_rate": 0.01404650988366279,
+                "error_rate": 1,
+                "error_categories": {
+                    "SYSTEM_ERROR": 0.014043593119770659
+                }
+            }
+        },
+        "summary": "LATENCY SPIKE detected affecting /api/error. Signals: latency@/api/error"
+    }
+]

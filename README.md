@@ -80,7 +80,7 @@ php artisan telemetry:reset
 Run the controlled workload:
 
 ```powershell
-py traffic_generator.py --base-url http://127.0.0.1:8000 --duration-minutes 10 --target-rps 3 --max-inflight 8
+py traffic_generator.py --base-url http://127.0.0.1:8000 --target-rps 6
 ```
 
 This produces `ground_truth.json` with:
