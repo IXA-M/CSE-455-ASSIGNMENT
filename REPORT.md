@@ -160,3 +160,98 @@ Repeated alerts for the same incident are suppressed by comparing a stable incid
    - `php artisan aiops:detect`
 
 The command runs continuously and evaluates every 20-30 seconds.
+
+## Lab Work 3 - ML Anomaly Detection
+
+### Dataset Construction
+The ML pipeline is implemented in `ml_anomaly_detection.py`. It loads `logs.json` from the workspace; when that file is missing, it extracts the same `logs.json` from `Selected-assignment-submission.zip` so the experiment remains reproducible from the submission bundle.
+
+The available root `ground_truth.json` is dated `2026-03-21`, but the telemetry used for ML spans `2026-03-09T16:36:26Z` to `2026-03-09T16:53:03Z`. To keep training and evaluation aligned to the same run, the anomaly window is derived from the `/api/anomaly-window` control events inside `logs.json`:
+
+- Anomaly start: `2026-03-09T16:41:58Z`
+- Anomaly end: `2026-03-09T16:50:22Z`
+
+The final dataset is stored in `aiops_dataset.csv` and contains `3995` observations, which satisfies the minimum requirement of `>= 1500` observations.
+
+Each observation is an endpoint-level rolling window sampled every second using a `60` second window. The dataset includes the required fields:
+
+- `timestamp`
+- `endpoint`
+- `latency`
+- `error_rate`
+- `request_rate`
+- `error_category`
+
+Operational metrics are reconstructed from the request log using the same Prometheus-style counters and latency statistics emitted by `app/Support/MetricsStore.php`.
+
+### Chosen Features
+The model uses the required engineered features:
+
+- `avg_latency`
+- `max_latency`
+- `request_rate`
+- `error_rate`
+- `latency_std`
+- `errors_per_window`
+- `endpoint_frequency`
+
+To strengthen detection of the injected `/api/slow` degradation, I also added per-window error-category rates:
+
+- `timeout_error_rate`
+- `system_error_rate`
+- `validation_error_rate`
+
+These extra features are still derived strictly from the Lab Work 1 telemetry and help the model distinguish the latency spike from normal endpoint-specific traffic variation.
+
+### Model Selection
+I chose a `One-Class SVM` with an RBF kernel:
+
+- `kernel = rbf`
+- `nu = 0.03`
+- `gamma = 0.5`
+
+The assignment requires training on normal behavior only, so the model is fit only on windows before `2026-03-09T16:41:58Z`. This gives `1507` normal-training windows.
+
+I selected One-Class SVM over the other allowed models because it produced the cleanest separation between pre-anomaly and anomaly-period windows in this telemetry run while keeping the normal-period false-positive rate low.
+
+### Prediction Output
+Predictions are written to `anomaly_predictions.csv` with:
+
+- `timestamp`
+- `anomaly_score`
+- `is_anomaly`
+
+The file also includes `endpoint` and `is_ground_truth_anomaly` so the anomaly points can be traced back to the affected service path and evaluated against the injected window.
+
+### Detection Performance
+Using the derived ground-truth window on `/api/slow`, the ML detector produced:
+
+- Slow-endpoint recall inside the anomaly window: `53.29%`
+- Slow-endpoint precision for predicted `/api/slow` anomalies: `69.63%`
+- False-positive rate during the normal-only training period: `2.12%`
+- Total detected anomalous windows: `969`
+
+This means the model does detect the injected anomaly window and highlights a sustained cluster of anomalous `/api/slow` windows during the degraded period.
+
+### Visualizations
+The required plots are generated in `plots/`:
+
+- `plots/latency_timeline.png`
+- `plots/error_rate_timeline.png`
+- `plots/anomaly_overview.png`
+
+The latency and error-rate timelines both highlight the predicted anomaly points and shade the injected anomaly window for inspection.
+
+### Deliverables
+- Training script: `ml_anomaly_detection.py`
+- Dataset: `aiops_dataset.csv`
+- Predictions: `anomaly_predictions.csv`
+- Plots: `plots/latency_timeline.png`, `plots/error_rate_timeline.png`, `plots/anomaly_overview.png`
+- Summary file: `ml_summary.json`
+
+### Reproducibility
+Run the ML pipeline with:
+
+```bash
+python ml_anomaly_detection.py
+```

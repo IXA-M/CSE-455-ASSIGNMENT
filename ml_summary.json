@@ -1,0 +1,28 @@
+{
+  "dataset_rows": 3995,
+  "train_rows": 1507,
+  "prediction_rows": 3995,
+  "window_seconds": 60,
+  "ground_truth_source": "logs.json control markers",
+  "anomaly_start_utc": "2026-03-09T16:41:58+00:00",
+  "anomaly_end_utc": "2026-03-09T16:50:22+00:00",
+  "model": {
+    "name": "One-Class SVM",
+    "kernel": "rbf",
+    "nu": 0.03,
+    "gamma": 0.5
+  },
+  "performance": {
+    "slow_endpoint_recall_in_window": 0.5329,
+    "slow_endpoint_precision_in_window": 0.6963,
+    "normal_period_false_positive_rate": 0.0212,
+    "detected_windows": 969
+  },
+  "artifacts": {
+    "dataset": "aiops_dataset.csv",
+    "predictions": "anomaly_predictions.csv",
+    "latency_plot": "plots\\latency_timeline.png",
+    "error_rate_plot": "plots\\error_rate_timeline.png",
+    "overview_plot": "plots\\anomaly_overview.png"
+  }
+}
