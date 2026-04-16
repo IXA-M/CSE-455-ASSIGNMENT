@@ -168,6 +168,7 @@ The ML pipeline is implemented in `ml_anomaly_detection.py`. It loads `logs.json
 
 The available root `ground_truth.json` is dated `2026-03-21`, but the telemetry used for ML spans `2026-03-09T16:36:26Z` to `2026-03-09T16:53:03Z`. To keep training and evaluation aligned to the same run, the anomaly window is derived from the `/api/anomaly-window` control events inside `logs.json`:
 
+
 - Anomaly start: `2026-03-09T16:41:58Z`
 - Anomaly end: `2026-03-09T16:50:22Z`
 
@@ -249,9 +250,95 @@ The latency and error-rate timelines both highlight the predicted anomaly points
 - Plots: `plots/latency_timeline.png`, `plots/error_rate_timeline.png`, `plots/anomaly_overview.png`
 - Summary file: `ml_summary.json`
 
+
 ### Reproducibility
-Run the ML pipeline with:
+Run the ML
 
 ```bash
 python ml_anomaly_detection.py
+```
+
+## Lab Work 4 - Automated Root Cause Analysis
+
+### RCA Scope
+Lab Work 4 uses one detected anomaly window from the previous labs and attributes the most likely cause by combining metrics and logs. The implementation is in `root_cause_analysis.py`, which consumes:
+
+- `aiops_dataset.csv`
+- `anomaly_predictions.csv`
+- `logs.json`
+
+The selected incident window is reconstructed automatically from the `/api/anomaly-window` control markers in `logs.json`:
+
+- Incident start: `2026-03-09T16:41:58+00:00`
+- Incident end: `2026-03-09T16:50:22+00:00`
+
+### Signal Analysis
+The RCA evaluates the required signals for every endpoint inside the selected anomaly window:
+
+- latency
+- request rate
+- error rate
+- endpoint activity
+- error categories
+
+For each endpoint, the script builds a normal-period baseline from windows before the incident and compares the incident-period behavior against that baseline using:
+
+- latency P95 deviation
+- error-rate deviation
+- request-rate deviation
+- endpoint-frequency deviation
+- Lab Work 3 anomaly scores and anomalous window counts
+
+### Root Cause Attribution
+The endpoint ranking produced by the RCA identified `/api/slow` as the root-cause endpoint.
+
+Structured RCA result:
+
+- `incident_id`: `incident-20260309T164158Z-20260309T165022Z`
+- `root_cause_endpoint`: `/api/slow`
+- `primary_signal`: `error_rate`
+- `confidence_score`: `0.76`
+
+This attribution is supported by three consistent signals:
+
+- `/api/slow` produced the highest RCA composite score (`512.069`)
+- `/api/slow` contributed the largest number of anomalous windows (`243`)
+- `/api/slow` was the only root endpoint whose own failures were entirely `TIMEOUT_ERROR`
+
+### Error Category Analysis
+Across the full anomaly window, the non-normal error distribution was:
+
+- `SYSTEM_ERROR`: `24` events (`57.14%`)
+- `TIMEOUT_ERROR`: `13` events (`30.95%`)
+- `VALIDATION_ERROR`: `5` events (`11.90%`)
+
+Because `/api/error` naturally emits `SYSTEM_ERROR`, the RCA separates global error mix from the selected root endpoint's own failures. For `/api/slow`, the endpoint-specific distribution was:
+
+- `TIMEOUT_ERROR`: `13` events (`100%` of `/api/slow` errors)
+
+That endpoint-level view is what makes `/api/slow` the strongest root-cause candidate instead of `/api/error`.
+
+### Incident Timeline
+The RCA generated the required four-phase incident timeline:
+
+- Normal state: `2026-03-09T16:40:58+00:00`
+- Anomaly start: `2026-03-09T16:41:58+00:00`
+- Peak incident: `2026-03-09T16:43:19+00:00`
+- Recovery: `2026-03-09T16:44:05+00:00`
+
+The corresponding visualization is saved as `plots/incident_timeline_rca.png`.
+
+### Deliverables
+Lab Work 4 deliverables are present in the repository:
+
+- RCA script: `root_cause_analysis.py`
+- Timeline visualization: `plots/incident_timeline_rca.png`
+- Structured report: `rca_report.json`
+- Two-page RCA report: `RCA_REPORT.md`
+
+### Reproducibility
+Run the RCA workflow with:
+
+```bash
+python root_cause_analysis.py
 ```

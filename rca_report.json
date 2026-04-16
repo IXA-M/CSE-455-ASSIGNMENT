@@ -1,0 +1,169 @@
+{
+  "incident_id": "incident-20260309T164158Z-20260309T165022Z",
+  "selected_window": {
+    "start_utc": "2026-03-09T16:41:58+00:00",
+    "end_utc": "2026-03-09T16:50:22+00:00",
+    "source": "logs.json anomaly-window control markers"
+  },
+  "root_cause_endpoint": "/api/slow",
+  "primary_signal": "error_rate",
+  "supporting_evidence": [
+    "/api/slow ranked first by RCA composite score (512.069) and produced 243 anomalous windows inside the selected incident.",
+    "At the peak timestamp 2026-03-09T16:43:19+00:00, /api/slow latency was 6510.5 ms versus baseline P95 5648.5 ms.",
+    "/api/slow error rate reached 1.00 at peak, compared with baseline P95 0.40.",
+    "TIMEOUT_ERROR was the dominant error category on /api/slow, while the overall window distribution was led by SYSTEM_ERROR; /api/slow still contributed 31.0% of all non-NONE errors in the window.",
+    "The analyzed incident window spans 2026-03-09T16:41:58+00:00 to 2026-03-09T16:50:22+00:00 and was selected from logs.json anomaly-window control markers."
+  ],
+  "confidence_score": 0.76,
+  "recommended_action": "Prioritize /api/slow: profile the slow execution path, add timeout protection and caching, and alert when TIMEOUT_ERROR exceeds the normal baseline.",
+  "incident_timeline": [
+    {
+      "phase": "normal_state",
+      "timestamp_utc": "2026-03-09T16:40:58+00:00",
+      "summary": "/api/slow was near its pre-incident baseline with latency 5098.5 ms and error rate 0.18."
+    },
+    {
+      "phase": "anomaly_start",
+      "timestamp_utc": "2026-03-09T16:41:58+00:00",
+      "summary": "The selected anomaly window started at 2026-03-09T16:41:58+00:00 based on logs.json anomaly-window control markers."
+    },
+    {
+      "phase": "peak_incident",
+      "timestamp_utc": "2026-03-09T16:43:19+00:00",
+      "summary": "Peak impact occurred when /api/slow reached 6510.5 ms, error rate 1.00, and activity share 0.20."
+    },
+    {
+      "phase": "recovery",
+      "timestamp_utc": "2026-03-09T16:44:05+00:00",
+      "summary": "Severity fell back toward baseline by 2026-03-09T16:44:05+00:00, with /api/slow latency at 5020.3 ms versus baseline P95 5648.5 ms."
+    }
+  ],
+  "signal_analysis": {
+    "window_duration_seconds": 504,
+    "peak_timestamp_utc": "2026-03-09T16:43:19+00:00",
+    "endpoint_comparison": [
+      {
+        "endpoint": "/api/slow",
+        "composite_score": 512.069,
+        "anomalous_points": 243,
+        "anomaly_score_sum": 242.454,
+        "anomaly_share": 0.3408,
+        "latency_baseline_p95_ms": 5648.545,
+        "latency_at_peak_ms": 6510.5,
+        "request_rate_baseline_p95_rps": 1.05,
+        "request_rate_at_peak_rps": 0.0333,
+        "error_rate_baseline_p95": 0.4,
+        "error_rate_at_peak": 1.0,
+        "endpoint_activity_baseline_p95": 0.2753,
+        "endpoint_activity_at_peak": 0.2,
+        "window_error_share": 0.2321,
+        "window_timeout_share": 0.2321
+      },
+      {
+        "endpoint": "/api/validate",
+        "composite_score": 265.326,
+        "anomalous_points": 238,
+        "anomaly_score_sum": 14.605,
+        "anomaly_share": 0.3338,
+        "latency_baseline_p95_ms": 125.167,
+        "latency_at_peak_ms": 14.667,
+        "request_rate_baseline_p95_rps": 0.1667,
+        "request_rate_at_peak_rps": 0.05,
+        "error_rate_baseline_p95": 0.5,
+        "error_rate_at_peak": 1.0,
+        "endpoint_activity_baseline_p95": 0.0403,
+        "endpoint_activity_at_peak": 0.0435,
+        "window_error_share": 0.625,
+        "window_timeout_share": 0.0
+      },
+      {
+        "endpoint": "/api/error",
+        "composite_score": 171.498,
+        "anomalous_points": 129,
+        "anomaly_score_sum": 22.157,
+        "anomaly_share": 0.1809,
+        "latency_baseline_p95_ms": 3.667,
+        "latency_at_peak_ms": 2.0,
+        "request_rate_baseline_p95_rps": 0.2667,
+        "request_rate_at_peak_rps": 0.05,
+        "error_rate_baseline_p95": 1.0,
+        "error_rate_at_peak": 1.0,
+        "endpoint_activity_baseline_p95": 0.0825,
+        "endpoint_activity_at_peak": 0.3,
+        "window_error_share": 1.0,
+        "window_timeout_share": 0.0
+      },
+      {
+        "endpoint": "/api/normal",
+        "composite_score": 148.29,
+        "anomalous_points": 103,
+        "anomaly_score_sum": 42.492,
+        "anomaly_share": 0.1445,
+        "latency_baseline_p95_ms": 58.251,
+        "latency_at_peak_ms": 5.6,
+        "request_rate_baseline_p95_rps": 4.1833,
+        "request_rate_at_peak_rps": 0.0833,
+        "error_rate_baseline_p95": 0.0,
+        "error_rate_at_peak": 0.0,
+        "endpoint_activity_baseline_p95": 0.7742,
+        "endpoint_activity_at_peak": 0.5,
+        "window_error_share": 0.0,
+        "window_timeout_share": 0.0
+      },
+      {
+        "endpoint": "/api/db",
+        "composite_score": 1.214,
+        "anomalous_points": 0,
+        "anomaly_score_sum": 0.0,
+        "anomaly_share": 0.0,
+        "latency_baseline_p95_ms": 9.333,
+        "latency_at_peak_ms": 2.0,
+        "request_rate_baseline_p95_rps": 0.1667,
+        "request_rate_at_peak_rps": 0.0167,
+        "error_rate_baseline_p95": 0.0,
+        "error_rate_at_peak": 0.0,
+        "endpoint_activity_baseline_p95": 0.0962,
+        "endpoint_activity_at_peak": 0.1429,
+        "window_error_share": 0.0,
+        "window_timeout_share": 0.0
+      }
+    ]
+  },
+  "error_category_analysis": {
+    "total_error_events": 42,
+    "distribution": {
+      "SYSTEM_ERROR": 0.5714,
+      "TIMEOUT_ERROR": 0.3095,
+      "VALIDATION_ERROR": 0.119
+    },
+    "counts": {
+      "SYSTEM_ERROR": 24,
+      "TIMEOUT_ERROR": 13,
+      "VALIDATION_ERROR": 5
+    },
+    "dominant_category": "SYSTEM_ERROR",
+    "endpoint_breakdown": {
+      "/api/error": {
+        "SYSTEM_ERROR": 24
+      },
+      "/api/slow": {
+        "TIMEOUT_ERROR": 13
+      },
+      "/api/validate": {
+        "VALIDATION_ERROR": 5
+      }
+    },
+    "root_endpoint": "/api/slow",
+    "root_endpoint_distribution": {
+      "TIMEOUT_ERROR": 1.0
+    },
+    "root_endpoint_counts": {
+      "TIMEOUT_ERROR": 13
+    },
+    "root_endpoint_dominant_category": "TIMEOUT_ERROR"
+  },
+  "artifact_paths": {
+    "timeline_visualization": "plots\\incident_timeline_rca.png",
+    "markdown_report": "RCA_REPORT.md"
+  }
+}
