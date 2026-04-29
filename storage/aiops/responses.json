@@ -1,0 +1,16 @@
+[
+    {
+        "incident_id": "b201b6e4-c52d-47d8-b97e-34a064923391",
+        "action_taken": "restart_service",
+        "timestamp": "2026-04-29T21:26:25+00:00",
+        "result": "success",
+        "notes": "Simulated service restart to clear latency pressure. Incident type: LATENCY_SPIKE. Affected endpoints: /api/error. LATENCY SPIKE detected affecting /api/error. Signals: latency@/api/error"
+    },
+    {
+        "incident_id": "b201b6e4-c52d-47d8-b97e-34a064923391",
+        "action_taken": "CRITICAL_ALERT",
+        "timestamp": "2026-04-29T21:26:30+00:00",
+        "result": "escalated",
+        "notes": "Anomaly persisted after automated response; escalating to critical alert."
+    }
+]
